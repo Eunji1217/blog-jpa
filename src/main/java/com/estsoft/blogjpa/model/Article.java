@@ -2,14 +2,19 @@ package com.estsoft.blogjpa.model;
 
 import com.estsoft.blogjpa.dto.ArticleResponse;
 import com.estsoft.blogjpa.dto.ArticleViewResponse;
+import com.estsoft.blogjpa.dto.CommentResponse;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @EntityListeners(AuditingEntityListener.class)
@@ -34,17 +39,28 @@ public class Article {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
     @Builder
-    public Article(String title, String content) {
+    public Article(Long id, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt, List<Comment> comments) {
+        this.id = id;
         this.title = title;
         this.content = content;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.comments = comments;
     }
+
 
     public Article() {
     }
 
     public ArticleResponse toResponse() {
         return ArticleResponse.builder()
+                .comments(comments.stream().map(CommentResponse::new).toList())
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
                 .title(title)
                 .content(content)
                 .build();

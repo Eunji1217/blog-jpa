@@ -15,8 +15,8 @@ public class JsonParseTestController {
         this.blogService = blogService;
     }
 
-    @GetMapping("/api/test")
-    public List<Article> test() {
-        return blogService.saveBulkArticles();
-    }
+//    @GetMapping("/api/test")
+//    public List<Article> test() {
+//        return blogService.saveBulkArticles();
+//    }
 }
